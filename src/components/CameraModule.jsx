@@ -4,40 +4,104 @@ import { submitData } from '../api';
 
 const CameraModule = () => {
     const videoRef = useRef(null);
+    const canvasRef = useRef(null);
     const streamRef = useRef(null);
+
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
-    const [permissionGranted, setPermissionGranted] = useState(false);
+    const [cameraActive, setCameraActive] = useState(false);
+    const [capturedImage, setCapturedImage] = useState(null);
 
     const startCamera = async () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+                video: {
+                    facingMode: 'user',
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
             });
+
             streamRef.current = mediaStream;
-            if (videoRef.current) {
-                videoRef.current.srcObject = mediaStream;
-            }
-            setPermissionGranted(true);
+            setCameraActive(true);
             setError(null);
+            return true;
         } catch (err) {
             console.error(err);
             setError('Camera access denied. Please allow camera permissions to proceed.');
+            return false;
         }
     };
+
+    useEffect(() => {
+        if (cameraActive && videoRef.current && streamRef.current) {
+            const video = videoRef.current;
+            video.srcObject = streamRef.current;
+
+            const handleLoadedMetadata = async () => {
+                try {
+                    await video.play();
+                } catch (err) {
+                    console.error("Video play error:", err);
+                }
+            };
+
+            video.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+            return () => {
+                video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            };
+        }
+    }, [cameraActive]);
 
     const stopCamera = () => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
             streamRef.current = null;
-            setPermissionGranted(false);
         }
+
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+
+        setCameraActive(false);
     };
 
-    const analyzeFace = () => {
+    const captureImage = () => {
+        if (!videoRef.current || !canvasRef.current) return null;
+
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+
+        // Mirror correctly since video is mirrored
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, width, height);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+        return imageData;
+    };
+
+    const analyzeFace = async () => {
+        if (!cameraActive) return;
+
+        const image = captureImage();
+        if (!image) return;
+
+        setCapturedImage(image);
+        stopCamera(); // Freeze frame effect
+
         setIsAnalyzing(true);
-        // Mock analysis - wait 2 seconds
+
         setTimeout(() => {
             const mockResult = {
                 symmetry: 0.98,
@@ -45,15 +109,22 @@ const CameraModule = () => {
                 message: 'No significant asymmetry detected.',
                 confidence: 0.95
             };
+
             setResult(mockResult);
             setIsAnalyzing(false);
-            submitData('temp-session', 'face', mockResult); // Fire and forget
+
+            submitData('temp-session', 'face', {
+                ...mockResult,
+                image
+            });
+
         }, 2000);
     };
 
     const reset = () => {
         setResult(null);
         setIsAnalyzing(false);
+        setCapturedImage(null);
     };
 
     useEffect(() => {
@@ -68,19 +139,27 @@ const CameraModule = () => {
             <p className="description">Align your face within the frame. Maintain a neutral expression.</p>
 
             <div className="camera-frame-container">
-                {!permissionGranted ? (
+                {!cameraActive && !capturedImage ? (
                     <div className="camera-placeholder" onClick={startCamera}>
                         <Camera size={48} />
                         <span>Tap to Enable Camera</span>
                     </div>
+                ) : capturedImage ? (
+                    <img
+                        src={capturedImage}
+                        alt="Captured"
+                        className={`camera-feed ${isAnalyzing ? 'scanning' : ''}`}
+                    />
                 ) : (
                     <>
                         <video
                             ref={videoRef}
                             autoPlay
                             playsInline
+                            muted
                             className={`camera-feed ${isAnalyzing ? 'scanning' : ''}`}
                         />
+                        <canvas ref={canvasRef} style={{ display: 'none' }} />
                         <div className="guide-overlay">
                             <div className="face-oval"></div>
                             <div className="grid-lines"></div>
@@ -92,13 +171,11 @@ const CameraModule = () => {
             {error && <div className="error-message"><AlertTriangle size={16} /> {error}</div>}
 
             <div className="controls">
-                {!permissionGranted ? (
-                    <button className="btn btn-primary" onClick={startCamera}>Grant Access</button>
-                ) : !result ? (
+                {!result ? (
                     <button
                         className="btn btn-primary action-btn"
                         onClick={analyzeFace}
-                        disabled={isAnalyzing}
+                        disabled={isAnalyzing || !cameraActive}
                     >
                         {isAnalyzing ? 'Analyzing...' : 'Capture & Analyze'}
                     </button>
@@ -158,7 +235,7 @@ const CameraModule = () => {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
-                    transform: scaleX(-1); /* Mirror effect */
+                    transform: scaleX(-1);
                 }
                 
                 .scanning {
@@ -180,7 +257,7 @@ const CameraModule = () => {
                     height: 70%;
                     border: 2px dashed rgba(255, 255, 255, 0.7);
                     border-radius: 50%;
-                    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); /* Dim outside */
+                    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
                 }
 
                 .error-message {

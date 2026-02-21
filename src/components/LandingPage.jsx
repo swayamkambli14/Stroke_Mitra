@@ -147,12 +147,12 @@ function HeroSection() {
                     </div>
                     <div className="lp-hero-card-body">
                         <div className="lp-scan-face">
-                            <div className="lp-face-outline">
+                            {/* <div className="lp-face-outline"> */}
                                 <div className="lp-scan-line" />
-                                <div className="lp-face-eye lp-eye-left" />
+                                {/* <div className="lp-face-eye lp-eye-left" />
                                 <div className="lp-face-eye lp-eye-right" />
-                                <div className="lp-face-mouth" />
-                            </div>
+                                <div className="lp-face-mouth" /> */}
+                            {/* </div> */}
                             <div className="lp-scan-corner lp-corner-tl" />
                             <div className="lp-scan-corner lp-corner-tr" />
                             <div className="lp-scan-corner lp-corner-bl" />

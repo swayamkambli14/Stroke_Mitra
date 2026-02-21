@@ -1,26 +1,34 @@
 :root {
-  /* Medical Grade Palette - Calm & Reassuring */
-  
-  /* Primary - Deep Ocean Teal */
-  --color-primary: 198, 60%, 45%;    /* #2E86B0 */
-  --color-primary-light: 198, 60%, 95%; 
-  
-  /* Secondary - Sage Green */
-  --color-secondary: 150, 40%, 50%;  /* #4CB88C */
-  
+  /* Premium Teal + White Modern HealthTech Theme */
+
+  /* Primary - Teal Accent */
+  --color-primary: 188, 85%, 35%;
+  /* #0891B2 - Primary Teal */
+  --color-primary-light: 180, 100%, 97%;
+
+  /* Secondary - Deep Teal */
+  --color-secondary: 168, 70%, 41%;
+  /* #0D9488 - Success Teal */
+
   /* Backgrounds */
-  --bg-app: 210, 20%, 98%;          /* #F5F7FA - Off-white cool */
-  --bg-card: 0, 0%, 100%;           /* #FFFFFF */
-  --bg-overlay: 210, 20%, 10%;      /* Dark overlay */
+  --bg-app: 180, 100%, 97%;
+  /* #F0FAFA - Primary Background */
+  --bg-card: 0, 0%, 100%;
+  /* #FFFFFF - Card Background */
+  --bg-overlay: 192, 70%, 20%;
+  /* Deep teal overlay */
 
   /* Text */
-  --text-main: 210, 20%, 20%;       /* Dark Slate */
-  --text-muted: 210, 15%, 50%;      /* Soft Grey */
-  --text-light: 210, 20%, 98%;      /* Light text on dark bg */
+  --text-main: 195, 51%, 25%;
+  /* #1F4E5F - Body Text */
+  --text-muted: 195, 24%, 48%;
+  /* #5F8A96 - Muted Text */
+  --text-light: 0, 0%, 100%;
+  /* White text on dark bg */
 
   /* Status */
-  --status-success: 150, 60%, 45%;
-  --status-warning: 40, 90%, 60%;
+  --status-success: 168, 70%, 41%;
+  --status-warning: 35, 100%, 50%;
   --status-error: 0, 70%, 60%;
 
   /* Spacing */
@@ -60,9 +68,25 @@ body {
 }
 
 /* Typography */
-h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: var(--space-md); color: hsl(var(--color-primary)); }
-h2 { font-size: 1.5rem; font-weight: 500; margin-bottom: var(--space-sm); }
-p { margin-bottom: var(--space-md); color: hsl(var(--text-muted)); }
+h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-md);
+  color: hsl(var(--color-primary));
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: var(--space-sm);
+  color: hsl(var(--text-main));
+}
+
+p {
+  margin-bottom: var(--space-md);
+  color: hsl(var(--text-muted));
+}
 
 /* Layout Utilities */
 .container {
@@ -76,15 +100,15 @@ p { margin-bottom: var(--space-md); color: hsl(var(--text-muted)); }
   background: hsl(var(--bg-card));
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); /* Soft, elevated shadow */
+  box-shadow: 0 4px 20px -2px rgba(8, 145, 178, 0.08);
   margin-bottom: var(--space-lg);
   transition: transform var(--transition-med), box-shadow var(--transition-med);
-  border: 1px solid rgba(0,0,0,0.02);
+  border: 1px solid rgba(178, 224, 224, 0.5);
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px -4px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 30px -4px rgba(8, 145, 178, 0.15);
 }
 
 /* Button Styles */
@@ -107,10 +131,12 @@ p { margin-bottom: var(--space-md); color: hsl(var(--text-muted)); }
   background-color: hsl(var(--color-primary));
   color: hsl(var(--text-light));
 }
+
 .btn-primary:hover {
-  background-color: hsl(var(--color-primary), 0.9); /* Slightly lighter/darker via opacity or mix */
-  filter: brightness(1.1);
+  background-color: hsl(188, 78%, 31%);
+  filter: brightness(1.05);
 }
+
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -122,22 +148,50 @@ p { margin-bottom: var(--space-md); color: hsl(var(--text-muted)); }
   border: 2px solid hsl(var(--color-primary));
   color: hsl(var(--color-primary));
 }
+
 .btn-secondary:hover {
   background-color: hsl(var(--color-primary-light));
 }
 
 /* Utility Classes */
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.flex-col { display: flex; flex-direction: column; }
-.text-center { text-align: center; }
-.full-width { width: 100%; }
-.mt-md { margin-top: var(--space-md); }
-.mb-lg { margin-bottom: var(--space-lg); }
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mt-md {
+  margin-top: var(--space-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--space-lg);
+}
 
 /* Animation Utils */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {

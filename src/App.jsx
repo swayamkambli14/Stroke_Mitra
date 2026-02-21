@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Layout from './components/Layout';
 import Disclaimer from './components/Disclaimer';
 import LandingPage from './components/LandingPage';
+import LoginGate from './components/LoginGate';
 import { Camera, Mic, Activity, ArrowRight } from 'lucide-react';
 import './landing.css';
 
@@ -84,17 +85,19 @@ const AppHome = () => (
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Landing page — no Layout wrapper */}
-        <Route path="/" element={<LandingPage />} />
+    <LoginGate>
+      <Router>
+        <Routes>
+          {/* Landing page — no Layout wrapper */}
+          <Route path="/" element={<LandingPage />} />
 
-        {/* App screens — wrapped in Layout */}
-        <Route path="/app" element={<Layout><AppHome /></Layout>} />
-        <Route path="/face" element={<Layout><Suspense fallback={<LoadingFallback />}><CameraModule /></Suspense></Layout>} />
-        <Route path="/voice" element={<Layout><Suspense fallback={<LoadingFallback />}><VoiceModule /></Suspense></Layout>} />
-        <Route path="/motion" element={<Layout><Suspense fallback={<LoadingFallback />}><MotionModule /></Suspense></Layout>} />
-      </Routes>
-    </Router>
+          {/* App screens — wrapped in Layout */}
+          <Route path="/app" element={<Layout><AppHome /></Layout>} />
+          <Route path="/face" element={<Layout><Suspense fallback={<LoadingFallback />}><CameraModule /></Suspense></Layout>} />
+          <Route path="/voice" element={<Layout><Suspense fallback={<LoadingFallback />}><VoiceModule /></Suspense></Layout>} />
+          <Route path="/motion" element={<Layout><Suspense fallback={<LoadingFallback />}><MotionModule /></Suspense></Layout>} />
+        </Routes>
+      </Router>
+    </LoginGate>
   );
 }
